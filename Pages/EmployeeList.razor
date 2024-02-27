@@ -1,0 +1,59 @@
+﻿@page "/EmployeeList"
+@using EmployeeBlazorCRUD.Data
+
+@inject EmployeeService employeeService
+<NavLink class="nav-link" href="AddEmployee">
+    <span class="oi oi-plus" aria-hidden="true">Add New Employee</span>
+</NavLink>
+
+<h1>Employee List</h1>
+
+@if(empList==null)
+{
+    <p><em>Loading....... </em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Employee Id</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Gender</th>
+                <th>Action</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(Employee emp in empList)
+            {
+                <tr>
+                    <td>@emp.Id</td>
+                    <td>@emp.FirstName</td>
+                    <td>@emp.LastName</td>
+                    <td>@emp.Gender</td>
+                    <td>
+                        <a class="nav-link" href="EditEmployee/@emp.Id">
+                            <span class="oi oi-pencil" aria-hidden="true">Edit</span>
+                        </a>
+
+                        <a class="nav-link" href="DeleteEmployee/@emp.Id">
+                            <span class="oi oi-trash" aria-hidden="true">Delete</span>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+
+@code {
+    List<Employee> empList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        empList = await Task.Run(() => employeeService.GetEmployees());
+    }
+}
