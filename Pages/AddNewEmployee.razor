@@ -1,6 +1,78 @@
 ﻿@page "/AddNewEmployee"
-<h3>AddNewEmployee</h3>
+@using BlazorBootstrap;
+@using EmployeeBlazorCRUD.Data;
 
+@inject EmployeeService _employeeservice;
+
+<h3 class="text-center">AddNewEmployee</h3>
+@if(added){
+    <Alert Color="AlertColor.Success"> <Icon Name="IconName.CheckCircleFill" class="me-2"></Icon>Employee added successfully </Alert>
+}
+
+<div class="d-flex justify-content-center align-items-center">
+    <Card Style="width:30rem;" Class="shadow p-3">
+        <CardHeader>
+            New Employee
+        </CardHeader>
+        <CardBody Class="row">
+             <div>
+                <div class="">
+                    <input type="text" class="form-control" id="exampleFormControlInput1" @bind="newEmployee.FirstName" placeholder="First Name" required>
+                </div>
+                <br />
+                <div class="">
+                    <input type="text" class="form-control" id="exampleFormControlInput2" @bind="newEmployee.LastName" placeholder="First Name" required>
+                </div>
+                <br />
+                <div class="d-flex justify-content-evenly">
+                   <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault1" checked="@(newEmployee.Gender == "Male")" value="Male" @bind="newEmployee.Gender">
+                        <label class="form-check-label" for="flexRadioDefault1">
+                            Male
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault2" checked="@(newEmployee.Gender == "Female")" value="Female" @bind="newEmployee.Gender">
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Female
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault3" checked="@(newEmployee.Gender == "Other")" value="Other" @bind="newEmployee.Gender">
+                        <label class="form-check-label" for="flexRadioDefault3">
+                            Other
+                        </label>
+                    </div>
+                    <br />
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button class="btn btn-primary" @onclick="submitEmployeeData" style="width:15rem">Add</button>
+                </div>
+            </div>
+        </CardBody>
+    </Card>
+</div>
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        newEmployee.Gender = "Female";
+    }
+    private Employee newEmployee = new Employee();
 
+    private bool added = false;
+
+    private async Task submitEmployeeData()
+    {
+        if(await _employeeservice.AddEmployee(newEmployee))
+        {
+            added = true;
+            newEmployee = new Employee();
+        }
+        else
+        {
+            added = false;
+        }
+    }
+
+    
 }

@@ -1,12 +1,25 @@
 ﻿@page "/EmployeeList"
 @using EmployeeBlazorCRUD.Data
+@using BlazorBootstrap;
+@using Microsoft.JSInterop;
+@using System.Threading.Tasks;
+@inject IJSRuntime JSRuntime 
 
 @inject EmployeeService employeeService
-<NavLink class="nav-link" href="AddEmployee">
+@inject IJSRuntime JsRuntime
+
+<NavLink class="nav-link" href="AddNewEmployee">
     <span class="oi oi-plus" aria-hidden="true">Add New Employee</span>
 </NavLink>
 
+ 
 <h1>Employee List</h1>
+@if (deletedState)
+{
+    <div class="alert alert-danger" role="alert">
+        Employee Deleted
+    </div>
+}
 
 @if(empList==null)
 {
@@ -34,26 +47,110 @@ else
                     <td>@emp.LastName</td>
                     <td>@emp.Gender</td>
                     <td>
-                        <a class="nav-link" href="EditEmployee/@emp.Id">
+                        <a class="" href="javascript:void(0)" @onclick="() => OpenEditModal(emp)">
                             <span class="oi oi-pencil" aria-hidden="true">Edit</span>
                         </a>
 
-                        <a class="nav-link" href="DeleteEmployee/@emp.Id">
-                            <span class="oi oi-trash" aria-hidden="true">Delete</span>
+                        <a class="" href="javascript:void(0)" @onclick="() =>ConfirmDeletion(emp.Id)">
+                            <span class="oi oi-trash" aria-hidden="true">Delete</span> 
                         </a>
                     </td>
                 </tr>
             }
         </tbody>
-
     </table>
+    <!-- Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Employee</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form to update employee information -->
+                    <div class="form-group">
+                        <label for="firstName">First Name:</label>
+                        <input type="text" class="form-control" id="firstName" @bind="@editEmployee.FirstName" />
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" class="form-control" id="lastName" @bind="@editEmployee.LastName" />
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Gender:</label>
+                        <input type="text" class="form-control" id="gender" @bind="@editEmployee.Gender" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" @onclick="() => UpdateEmployee(editEmployee)">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 @code {
+    // ======================================== Get all employees ==================================================
     List<Employee> empList;
 
+    // Get all employees
     protected override async Task OnInitializedAsync()
     {
         empList = await Task.Run(() => employeeService.GetEmployees());
+    }
+    //===============================================================================================================
+
+
+
+    // ========================================= Delete employee ====================================================
+    private int employeeIdToBeDeleted; // This will hold the id to be deleted
+    private bool deletedState = false;
+    private bool updatedState = false;
+    private static object[] message = new object[] { "Are you sure you want to proceed with this operation?" };
+
+    // Confirmation to delete and employee
+    private async Task ConfirmDeletion(int id)
+    {
+        employeeIdToBeDeleted = id;
+        // Display the dialog for confirmation(Javascript Runtime)
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", message);
+        if (confirmed)
+        {
+            await DeleteEmployee(employeeIdToBeDeleted);
+        }
+    }   
+    protected async Task DeleteEmployee(int id)
+    {
+        bool deleted = await employeeService.TrashEmployee(id);
+        if (deleted)
+        {
+            deletedState = true;
+            empList = await Task.Run(() => employeeService.GetEmployees());
+        }
+    }
+    // ==============================================================================================================
+
+    // =========================================== Update Employee Record ===========================================
+    private async Task UpdateEmployee(Employee employee)
+    {
+        bool updated = await employeeService.UpdateEmployeeRecord(employee);
+        if (updated)
+        {
+            updatedState = true;
+        }
+    }
+
+    // Methods
+
+    private Employee editEmployee; // Employee object to be edited
+
+    // Method to open the edit modal and populate it with employee data
+    private void OpenEditModal(Employee employee)
+    {
+        editEmployee = employee; // Set the employee to be edited
+                                
+        JSRuntime.InvokeVoidAsync("$('#editModal').modal", "show"); // Show the modal
     }
 }
