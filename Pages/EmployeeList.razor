@@ -1,16 +1,19 @@
 ﻿@page "/EmployeeList"
 @using EmployeeBlazorCRUD.Data
+@using BlazorBootstrap
+
 
 @inject EmployeeService employeeService
-<NavLink class="nav-link" href="AddEmployee">
-    <span class="oi oi-plus" aria-hidden="true">Add New Employee</span>
-</NavLink>
+@inject IJSRuntime JSRuntime
+
 
 <h1>Employee List</h1>
 
-@if(empList==null)
+<Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Add New Employee</Button>
+
+@if (empList == null)
 {
-    <p><em>Loading....... </em></p>
+    <p><em>Loading...</em></p>
 }
 else
 {
@@ -22,11 +25,10 @@ else
                 <th>Last Name</th>
                 <th>Gender</th>
                 <th>Action</th>
-
             </tr>
         </thead>
         <tbody>
-            @foreach(Employee emp in empList)
+            @foreach (var emp in empList)
             {
                 <tr>
                     <td>@emp.Id</td>
@@ -34,26 +36,141 @@ else
                     <td>@emp.LastName</td>
                     <td>@emp.Gender</td>
                     <td>
-                        <a class="nav-link" href="EditEmployee/@emp.Id">
+                        <a class="edit-link" @onclick="() => OnEditEmployeeClick(emp.Id)">
                             <span class="oi oi-pencil" aria-hidden="true">Edit</span>
                         </a>
-
-                        <a class="nav-link" href="DeleteEmployee/@emp.Id">
+                        <a class="delete-link" @onclick="() => OnDeleteEmployeeClick(emp.Id)">
                             <span class="oi oi-trash" aria-hidden="true">Delete</span>
                         </a>
+
+
                     </td>
                 </tr>
             }
         </tbody>
-
     </table>
 }
 
+<Modal @ref="modal" title="Add New Employee" IsVerticallyCentered="true">
+    <BodyTemplate>
+        <div class="form-group">
+            <label for="FirstName">First Name:</label>
+            <input type="text" class="form-control" id="FirstName" @bind="newEmployee.FirstName" required />
+        </div>
+        <div class="form-group">
+            <label for="LastName">Last Name:</label>
+            <input type="text" class="form-control" id="LastName" @bind="newEmployee.LastName" required />
+        </div>
+        <div class="form-group">
+            <label for="Gender">Gender:</label>
+            <select class="form-control" id="gender" @bind="newEmployee.Gender" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+        <Button Color="ButtonColor.Primary" @onclick="OnSaveEmployeeClick">Save</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="editModal" title="Update Employee" IsVerticallyCentered="true">
+    <BodyTemplate>
+        <div class="form-group">
+            <label for="FirstName">First Name:</label>
+            <input type="text" class="form-control" id="FirstName" @bind="tempEditedEmployee.FirstName" required />
+        </div>
+        <div class="form-group">
+            <label for="LastName">Last Name:</label>
+            <input type="text" class="form-control" id="LastName" @bind="tempEditedEmployee.LastName" required />
+        </div>
+        <div class="form-group">
+            <label for="Gender">Gender:</label>
+            <select class="form-control" id="Gender" @bind="tempEditedEmployee.Gender" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+    </BodyTemplate>
+
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnCloseEditModalClick">Close</Button>
+        <Button Color="ButtonColor.Primary" @onclick="OnSaveEditedEmployeeClick">Save changes</Button>
+    </FooterTemplate>
+</Modal>
+
+
+
+
 @code {
-    List<Employee> empList;
+    private Modal editModal = default!;
+    private Modal modal = default!;
+    private List<Employee> empList;
+
+    private Employee newEmployee = new Employee();
+    private Employee editedEmployee = new Employee();
 
     protected override async Task OnInitializedAsync()
     {
-        empList = await Task.Run(() => employeeService.GetEmployees());
+        empList = await employeeService.GetEmployees();
+    }
+
+    private async Task OnShowModalClick()
+    {
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+
+    private async Task OnSaveEmployeeClick()
+    {
+        await employeeService.AddNewEmployee(newEmployee);
+        empList.Add(newEmployee); // Add the new employee to the list 
+        await modal.HideAsync();
+    }
+
+    private Employee tempEditedEmployee = new Employee(); // Temporary variable to hold edited employee data
+
+    private async Task OnEditEmployeeClick(int employeeId)
+    {
+        editedEmployee = empList.FirstOrDefault(e => e.Id == employeeId);
+        tempEditedEmployee = editedEmployee.Clone(); // Create a deep copy of editedEmployee
+        await editModal.ShowAsync();
+    }
+
+    private async Task OnSaveEditedEmployeeClick()
+    {
+        editedEmployee = tempEditedEmployee.Clone(); // Update the main editedEmployee with the changes
+        await employeeService.UpdateEmployee(editedEmployee); // Update the database
+        await editModal.HideAsync();
+        await RefreshEmployeeList(); // Refresh the employee table
+    }
+
+    private async Task OnCloseEditModalClick()
+    {
+        // Reset temporary edited employee to its original state
+        tempEditedEmployee = new Employee(); // Or you can re-fetch the data from the database
+        await editModal.HideAsync();
+    }
+
+
+    private async Task OnDeleteEmployeeClick(int employeeId)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", new object[] { "Are you sure you want to delete this employee?" });
+        if (confirmed)
+        {
+            await employeeService.DeleteEmployee(employeeId);
+            await RefreshEmployeeList(); // Refresh the employee list after deletion
+        }
+    }
+
+
+    private async Task RefreshEmployeeList()
+    {
+        empList = await employeeService.GetEmployees();
     }
 }

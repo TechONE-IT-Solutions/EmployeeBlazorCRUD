@@ -1,6 +1,58 @@
-﻿@page "/AddNewEmployee"
-<h3>AddNewEmployee</h3>
+﻿@* @page "/AddNewEmployee"
+@using EmployeeBlazorCRUD.Data
+@using BlazorBootstrap
+
+<Modal @ref="modal" title="Add New Employee" IsVerticallyCentered="true">
+    <BodyTemplate>
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" class="form-control" id="firstName" @bind="newEmployee.FirstName" />
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" class="form-control" id="lastName" @bind="newEmployee.LastName" />
+        </div>
+        <div class="form-group">
+            <label for="gender">Gender:</label>
+            <select class="form-control" id="gender" @bind="newEmployee.Gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+        <Button Color="ButtonColor.Primary" @onclick="OnSaveEmployeeClick">Save changes</Button>
+    </FooterTemplate>
+</Modal>
+
+<Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Add New Employee</Button>
 
 @code {
+    private Modal modal = default!;
+    private Employee newEmployee = new Employee();
+    private readonly EmployeeService employeeService;
 
+    public AddNewEmployee()
+    {
+        
+    }
+
+    private async Task OnShowModalClick()
+    {
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+
+    private async Task OnSaveEmployeeClick()
+    {
+        await employeeService.AddNewEmployee(newEmployee);
+        await modal.HideAsync();
+    }
 }
+ *@

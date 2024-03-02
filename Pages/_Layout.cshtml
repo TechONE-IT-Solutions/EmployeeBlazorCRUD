@@ -10,8 +10,13 @@
     <base href="~/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
-    <link href="EmployeeBlazorCRUD.styles.css" rel="stylesheet" />
+    <link href="EmployeeBlazorCRUD.styles.css" rel="stylesheet" /> 
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+
+    <!-- CSS references for BlazorBootstrap -->
+@*     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+ *@    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" /> 
 </head>
 <body>
     @RenderBody()
@@ -28,5 +33,11 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
+
+    <!-- Script references for BlazorBootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <!-- Add chart.js reference if chart components are used in your application. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js" integrity="sha384-UoxKvfBIEYp4u6xof4HDSqs3TctZgzEOoj8ZNzuz29Bh13tR9mRksv5gGLWJ2dPH" crossorigin="anonymous"></script>
+    <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
 </body>
 </html>

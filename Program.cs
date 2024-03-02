@@ -3,6 +3,7 @@ using EmployeeBlazorCRUD.DataContext;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
+using BlazorBootstrap;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,9 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<EmployeeService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(item=>item.UseSqlServer(builder.Configuration.GetConnectionString("DefualtConnection")));
+
+
+builder.Services.AddBlazorBootstrap();
 
 var app = builder.Build();
 
