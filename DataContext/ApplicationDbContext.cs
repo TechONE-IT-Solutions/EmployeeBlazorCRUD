@@ -11,3 +11,4 @@ namespace EmployeeBlazorCRUD.DataContext
         public DbSet<Employee> Employees { get; set; }
     }
 }
+ 

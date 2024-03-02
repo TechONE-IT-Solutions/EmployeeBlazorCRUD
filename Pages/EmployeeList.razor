@@ -2,15 +2,39 @@
 @using EmployeeBlazorCRUD.Data
 
 @inject EmployeeService employeeService
-<NavLink class="nav-link" href="AddEmployee">
-    <span class="oi oi-plus" aria-hidden="true">Add New Employee</span>
-</NavLink>
+
+<Modal @ref="modal" Title="Modal title">
+    <BodyTemplate>
+       Add a New Employee
+    </BodyTemplate>
+    <FooterTemplate>
+
+        <EditForm Model="@newEmployee" OnValidSubmit="SubmitForm">
+            <label></label>
+            <InputText />
+        </EditForm>
+
+
+
+        
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+        <Button Color="ButtonColor.Primary">Save changes</Button>
+    </FooterTemplate>
+</Modal>
+
+    <Button Color="ButtonColor.Primary" @onclick="OnShowModalClick"> Add New Members </Button>
+
 
 <h1>Employee List</h1>
 
 @if(empList==null)
 {
-    <p><em>Loading....... </em></p>
+    <PlaceholderContainer Animation="PlaceholderAnimation.Glow">
+        <Placeholder Width="PlaceholderWidth.Col7" />
+        <Placeholder Width="PlaceholderWidth.Col9" />
+        <Placeholder Width="PlaceholderWidth.Col6" />
+        <Placeholder Width="PlaceholderWidth.Col7" />
+    </PlaceholderContainer>
 }
 else
 {
@@ -50,10 +74,31 @@ else
 }
 
 @code {
+    public Employee newEmployee = new Employee();
+    private async Task SubmitForm()
+    {
+        
+    }
+
     List<Employee> empList;
 
     protected override async Task OnInitializedAsync()
     {
         empList = await Task.Run(() => employeeService.GetEmployees());
+    }
+
+    
+
+
+    private Modal modal = default!;
+
+    private async Task OnShowModalClick()
+    {
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
     }
 }
