@@ -3,6 +3,44 @@
 
 @inject EmployeeService employeeService
 
+
+<Modal @ref="editmodal" Title="Edit Employees">
+    <BodyTemplate>
+        <form>
+
+            <div class="row">
+
+                <div class="for-group">
+                    <label for="ID" class="control-label">ID</label>
+                    <input form="ID" class="form-control" @bind="newEmployee.Id" />
+                </div>
+
+                <div class="for-group">
+                    <label for="FirstName" class="control-label">First Name</label>
+                    <input form="FirstName" class="form-control" @bind="newEmployee.FirstName" />
+                </div>
+
+
+                <div class="for-group">
+                    <label for="LastName" class="control-label">Last Name</label>
+                    <input form="LastName" class="form-control" @bind="newEmployee.LastName" />
+                </div>
+
+
+                <div class="for-group">
+                    <label for="Gender" class="control-label">Gender</label>
+                    <input form="Gender" class="form-control" @bind="newEmployee.Gender" />
+                </div>
+
+            </div>
+        </form>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick" value="close">Close</Button>
+        <Button Color="ButtonColor.Primary" @onclick="@UpdateEmployeeDetails" value="save">Update changes</Button>
+    </FooterTemplate>
+</Modal>
+
 <Modal @ref="modal" Title="Add New Employees">
     <BodyTemplate>
         <form>
@@ -70,22 +108,15 @@ else
                     <td>@emp.FirstName</td>
                     <td>@emp.LastName</td>
                     <td>@emp.Gender</td>
-                    <Button Color="ButtonColor.Secondary" TooltipTitle="Compare code">
-                        <Icon CustomIconName="fa-solid fa-code-compare" />
-                    </Button>
-                    <Button Color="ButtonColor.Secondary" TooltipTitle="Create pull request">
-                        <Icon CustomIconName="fa-solid fa-code-pull-request" />
-                    </Button>
                     <td>
-                        <a class="nav-link" href="EditEmployee/@emp.Id">
-                            <span class="oi oi-pencil" aria-hidden="true">Edit</span>
-                        </a>
+                        <Button Color="ButtonColor.Secondary" @onclick="OnShowEditModalClick" TooltipTitle="Edit Employee Details">
+                            <Icon Name="IconName.Magic" />
+                        </Button>
+                        <Button Color="ButtonColor.Secondary"  TooltipTitle="Delete Employee">
+                            <Icon Name="IconName.Magnet" />
+                        </Button>
                     </td>
-                    <td>
-                        <a class="nav-link" href="DeleteEmployee/@emp.Id">
-                            <span class="oi oi-trash" aria-hidden="true">Delete</span>
-                        </a>
-                    </td>
+                     
                 </tr>
             }
         </tbody>
@@ -94,7 +125,14 @@ else
 }
 
 @code {
+        [Parameter]
+        public string Id { get; set; }
+
+
+
     private Modal modal = default!;
+    private Modal editmodal = default!;
+
     public Employee newEmployee = new Employee();
 
     protected async void AddNewEmployeeDetails()
@@ -103,6 +141,19 @@ else
         await modal.HideAsync();
         await OnInitializedAsync();
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        newEmployee = await Task.Run(() => employeeService.GetEmployeesById(Convert.ToInt32(Id)));
+    }
+
+    protected async void UpdateEmployeeDetails()
+    {
+        await employeeService.UpdateEmployeesDetails(newEmployee);
+        await editmodal.HideAsync();
+        await OnInitializedAsync();
+    }
+
 
    
 
@@ -127,4 +178,18 @@ else
         await modal.HideAsync();
         await OnInitializedAsync();
     }
+
+    private async Task OnShowEditModalClick()
+    {
+        await editmodal.ShowAsync();
+        await OnInitializedAsync();
+
+    }
+
+    private async Task OnHideEditModalClick()
+    {
+        await editmodal.HideAsync();
+        await OnInitializedAsync();
+    }
+
 }
