@@ -3,22 +3,35 @@
 
 @inject EmployeeService employeeService
 
-<Modal @ref="modal" Title="Modal title">
+<Modal @ref="modal" Title="Add New Employees">
     <BodyTemplate>
-       Add a New Employee
+        <form>
+
+            <div class="row">
+               
+                    <div class="for-group">
+                        <label for="FirstName" class="control-label">First Name</label>
+                        <input form="FirstName" class="form-control" @bind="newEmployee.FirstName" />
+                    </div>
+              
+                
+                    <div class="for-group">
+                        <label for="LastName" class="control-label">Last Name</label>
+                        <input form="LastName" class="form-control" @bind="newEmployee.LastName" />
+                    </div>
+              
+               
+                    <div class="for-group">
+                        <label for="Gender" class="control-label">Gender</label>
+                        <input form="Gender" class="form-control" @bind="newEmployee.Gender" />
+                    </div>
+               
+            </div>
+        </form>
     </BodyTemplate>
     <FooterTemplate>
-
-        <EditForm Model="@newEmployee" OnValidSubmit="SubmitForm">
-            <label></label>
-            <InputText />
-        </EditForm>
-
-
-
-        
-        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
-        <Button Color="ButtonColor.Primary">Save changes</Button>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick" value="close">Close</Button>
+        <Button Color="ButtonColor.Primary" @onclick="@AddNewEmployeeDetails" value="save">Save changes</Button>
     </FooterTemplate>
 </Modal>
 
@@ -57,11 +70,18 @@ else
                     <td>@emp.FirstName</td>
                     <td>@emp.LastName</td>
                     <td>@emp.Gender</td>
+                    <Button Color="ButtonColor.Secondary" TooltipTitle="Compare code">
+                        <Icon CustomIconName="fa-solid fa-code-compare" />
+                    </Button>
+                    <Button Color="ButtonColor.Secondary" TooltipTitle="Create pull request">
+                        <Icon CustomIconName="fa-solid fa-code-pull-request" />
+                    </Button>
                     <td>
                         <a class="nav-link" href="EditEmployee/@emp.Id">
                             <span class="oi oi-pencil" aria-hidden="true">Edit</span>
                         </a>
-
+                    </td>
+                    <td>
                         <a class="nav-link" href="DeleteEmployee/@emp.Id">
                             <span class="oi oi-trash" aria-hidden="true">Delete</span>
                         </a>
@@ -74,11 +94,17 @@ else
 }
 
 @code {
+    private Modal modal = default!;
     public Employee newEmployee = new Employee();
-    private async Task SubmitForm()
+
+    protected async void AddNewEmployeeDetails()
     {
-        
+        await employeeService.AddEmployees(newEmployee);
+        await modal.HideAsync();
+        await OnInitializedAsync();
     }
+
+   
 
     List<Employee> empList;
 
@@ -89,16 +115,16 @@ else
 
     
 
-
-    private Modal modal = default!;
-
     private async Task OnShowModalClick()
     {
         await modal.ShowAsync();
+        await OnInitializedAsync();
+
     }
 
     private async Task OnHideModalClick()
     {
         await modal.HideAsync();
+        await OnInitializedAsync();
     }
 }

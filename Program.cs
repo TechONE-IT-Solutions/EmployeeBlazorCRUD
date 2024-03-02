@@ -13,6 +13,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddScoped<EmployeeService>();
 
+// Connection To Database
 builder.Services.AddDbContext<ApplicationDbContext>(item=>item.UseSqlServer(builder.Configuration.GetConnectionString("DefualtConnection")));
 
 builder.Services.AddBlazorBootstrap();
