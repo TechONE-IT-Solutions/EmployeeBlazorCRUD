@@ -139,23 +139,19 @@ else
     {
         await employeeService.AddEmployees(newEmployee);
         await modal.HideAsync();
-        await OnInitializedAsync();
     }
 
+    /*
     protected override async Task OnInitializedAsync()
     {
         newEmployee = await Task.Run(() => employeeService.GetEmployeesById(Convert.ToInt32(Id)));
     }
+    */
 
     protected async void UpdateEmployeeDetails()
     {
-        await employeeService.UpdateEmployeesDetails(newEmployee);
-        await editmodal.HideAsync();
-        await OnInitializedAsync();
+        await employeeService.UpdateEmployees(newEmployee);
     }
-
-
-   
 
     List<Employee> empList;
 
@@ -169,27 +165,21 @@ else
     private async Task OnShowModalClick()
     {
         await modal.ShowAsync();
-        await OnInitializedAsync();
-
     }
 
     private async Task OnHideModalClick()
     {
         await modal.HideAsync();
-        await OnInitializedAsync();
     }
 
     private async Task OnShowEditModalClick()
     {
         await editmodal.ShowAsync();
-        await OnInitializedAsync();
-
     }
 
     private async Task OnHideEditModalClick()
     {
         await editmodal.HideAsync();
-        await OnInitializedAsync();
     }
 
 }
