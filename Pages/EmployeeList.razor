@@ -50,7 +50,7 @@
 
                 <div class="for-group">
                     <label for="ID" class="control-label">ID</label>
-                    <input form="ID" class="form-control" @bind="newEmployee.Id" />
+                    <input form="ID" class="form-control" hidden @bind="newEmployee.Id" />
                 </div>
 
                 <div class="for-group">
@@ -148,18 +148,20 @@ else
                     <td>@emp.Gender</td>
                     <td>
                         <Button Color="ButtonColor.Secondary" @onclick="(e)  => OnShowEditModalClick(emp)" TooltipTitle="Edit Employee Details">
-                            <Icon Name="IconName.PencilSquare" />
+                            <Icon Name="@BlazorBootstrap.IconName.PencilSquare" />
                         </Button>
                         <Button Color="ButtonColor.Secondary" @onclick="(e) => OnShowDeleteModalClick(emp)" TooltipTitle="Delete Employee">
-                            <Icon Name="IconName.XSquare" />
+                            <Icon Name="@BlazorBootstrap.IconName.XSquare" />
                         </Button>
                     </td>
-                     
                 </tr>
             }
         </tbody>
 
+       
+
     </table>
+   
 }
 
 @code {
