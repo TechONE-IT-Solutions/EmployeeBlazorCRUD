@@ -4,6 +4,44 @@
 @inject EmployeeService employeeService
 
 
+<Modal @ref="deletemodal" Title="Are You Sure Of Deleting this Data">
+    <BodyTemplate>
+      
+
+            <div class="row">
+
+                <div class="for-group">
+                    <label for="ID" class="control-label">ID</label>
+                    <p>@newEmployee.Id</p>
+                </div>
+
+                <div class="for-group">
+                    <label for="FirstName" class="control-label">First Name</label>
+                    <p>@newEmployee.FirstName</p>
+                </div>
+
+
+                <div class="for-group">
+                    <label for="LastName" class="control-label">Last Name</label>
+                    <p>@newEmployee.LastName</p>
+                </div>
+
+
+                <div class="for-group">
+                    <label for="Gender" class="control-label">Gender</label>
+                    <p>@newEmployee.Gender</p>
+                </div>
+
+            </div>
+        
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="@OnHideDeleteModalClick" value="close">Close</Button>
+        <Button Color="ButtonColor.Primary" @onclick="@DeleteEmployee" value="save">Delete Now</Button>
+    </FooterTemplate>
+</Modal>
+
+
 <Modal @ref="editmodal" Title="Edit Employees">
     <BodyTemplate>
         <form>
@@ -36,7 +74,7 @@
         </form>
     </BodyTemplate>
     <FooterTemplate>
-        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick" value="close">Close</Button>
+        <Button Color="ButtonColor.Secondary" @onclick="@OnHideEditModalClick" value="close">Close</Button>
         <Button Color="ButtonColor.Primary" @onclick="@UpdateEmployeeDetails" value="save">Update changes</Button>
     </FooterTemplate>
 </Modal>
@@ -109,10 +147,10 @@ else
                     <td>@emp.LastName</td>
                     <td>@emp.Gender</td>
                     <td>
-                        <Button Color="ButtonColor.Secondary" @onclick="OnShowEditModalClick" TooltipTitle="Edit Employee Details">
+                        <Button Color="ButtonColor.Secondary" @onclick="(e)  => OnShowEditModalClick(emp)" TooltipTitle="Edit Employee Details">
                             <Icon Name="IconName.Magic" />
                         </Button>
-                        <Button Color="ButtonColor.Secondary"  TooltipTitle="Delete Employee">
+                        <Button Color="ButtonColor.Secondary" @onclick="(e) => OnShowDeleteModalClick(emp)" TooltipTitle="Delete Employee">
                             <Icon Name="IconName.Magnet" />
                         </Button>
                     </td>
@@ -125,25 +163,34 @@ else
 }
 
 @code {
-        [Parameter]
-        public string Id { get; set; }
-
-
+    [Parameter]
+    public string Id { get; set; }
 
     private Modal modal = default!;
     private Modal editmodal = default!;
+    private Modal deletemodal = default!;
 
     public Employee newEmployee = new Employee();
+
+    List<Employee> empList;
 
     protected async void AddNewEmployeeDetails()
     {
         await employeeService.AddEmployees(newEmployee);
-        await modal.HideAsync();
+        await OnHideModalClick();
+        await ReloadEmployeeList();
+
+    }
+
+    private async Task ReloadEmployeeList()
+    {
+        empList = await employeeService.GetEmployees();
+        StateHasChanged(); 
     }
 
     /*
     protected override async Task OnInitializedAsync()
-    {
+        {
         newEmployee = await Task.Run(() => employeeService.GetEmployeesById(Convert.ToInt32(Id)));
     }
     */
@@ -151,16 +198,25 @@ else
     protected async void UpdateEmployeeDetails()
     {
         await employeeService.UpdateEmployees(newEmployee);
+        await ReloadEmployeeList();
+        await OnHideEditModalClick();
     }
 
-    List<Employee> empList;
+    protected async void DeleteEmployee()
+    {
+        await employeeService.DeleteEmployees(newEmployee);
+        await ReloadEmployeeList();
+        await OnHideDeleteModalClick();
+    }
+
+
 
     protected override async Task OnInitializedAsync()
     {
         empList = await Task.Run(() => employeeService.GetEmployees());
     }
 
-    
+
 
     private async Task OnShowModalClick()
     {
@@ -172,14 +228,26 @@ else
         await modal.HideAsync();
     }
 
-    private async Task OnShowEditModalClick()
+    private async Task OnShowEditModalClick(Employee emp)
     {
+        newEmployee = emp;
         await editmodal.ShowAsync();
     }
 
     private async Task OnHideEditModalClick()
     {
         await editmodal.HideAsync();
+    }
+
+    private async Task OnShowDeleteModalClick(Employee emp)
+    {
+        newEmployee = emp;
+        await deletemodal.ShowAsync();
+    }
+
+    private async Task OnHideDeleteModalClick()
+    {
+        await deletemodal.HideAsync();
     }
 
 }
