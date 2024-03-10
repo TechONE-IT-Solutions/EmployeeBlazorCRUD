@@ -25,13 +25,13 @@
                 </div>
                 <br />
                 <div class="d-flex justify-content-evenly">
-                   <div class="form-check">
-                        <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault1" checked="@(newEmployee.Gender == "Male")" value="Male" @bind="newEmployee.Gender">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault1" checked="@(newEmployee.Gender == "Male")" @bind-value="newEmployee.Gender" >
                         <label class="form-check-label" for="flexRadioDefault1">
                             Male
                         </label>
                     </div>
-                    <div class="form-check">
+                   @*  <div class="form-check">
                         <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault2" checked="@(newEmployee.Gender == "Female")" value="Female" @bind="newEmployee.Gender">
                         <label class="form-check-label" for="flexRadioDefault2">
                             Female
@@ -42,9 +42,10 @@
                         <label class="form-check-label" for="flexRadioDefault3">
                             Other
                         </label>
-                    </div>
+                    </div> *@
                     <br />
                 </div>
+                <br />
                 <div class="d-flex justify-content-center">
                     <button class="btn btn-primary" @onclick="submitEmployeeData" style="width:15rem">Add</button>
                 </div>

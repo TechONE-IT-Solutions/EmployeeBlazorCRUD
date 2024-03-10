@@ -9,5 +9,7 @@ namespace EmployeeBlazorCRUD.DataContext
         {
         }
         public DbSet<Employee> Employees { get; set; }
+
+        public DbSet<ContactUS> Contacts { get; set; }
     }
 }

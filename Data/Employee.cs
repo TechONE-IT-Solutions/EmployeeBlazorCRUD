@@ -1,4 +1,5 @@
-﻿namespace EmployeeBlazorCRUD.Data
+﻿
+namespace EmployeeBlazorCRUD.Data
 {
     public class Employee
     {
@@ -7,4 +8,5 @@
         public string LastName { get; set; }
         public string Gender { get; set; }
     }
+
 }

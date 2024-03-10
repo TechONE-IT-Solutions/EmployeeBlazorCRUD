@@ -47,51 +47,57 @@ else
                     <td>@emp.LastName</td>
                     <td>@emp.Gender</td>
                     <td>
-                        <a class="" href="javascript:void(0)" @onclick="() => OpenEditModal(emp)">
-                            <span class="oi oi-pencil" aria-hidden="true">Edit</span>
-                        </a>
+                        <div class="" @onclick="(e) => OnShowModalClick(emp)">
+                            <span class="oi oi-pencil" aria-hidden="true">Edit1</span>
+                        </div>
 
-                        <a class="" href="javascript:void(0)" @onclick="() =>ConfirmDeletion(emp.Id)">
-                            <span class="oi oi-trash" aria-hidden="true">Delete</span> 
+                        <a class="" @onclick="(e) =>ConfirmDeletion(emp.Id)">
+                            <span class="oi oi-trash" aria-hidden="true">Delete1</span> 
                         </a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-    <!-- Modal -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Employee</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Form to update employee information -->
-                    <div class="form-group">
-                        <label for="firstName">First Name:</label>
-                        <input type="text" class="form-control" id="firstName" @bind="@editEmployee.FirstName" />
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName">Last Name:</label>
-                        <input type="text" class="form-control" id="lastName" @bind="@editEmployee.LastName" />
-                    </div>
-                    <div class="form-group">
-                        <label for="gender">Gender:</label>
-                        <input type="text" class="form-control" id="gender" @bind="@editEmployee.Gender" />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" @onclick="() => UpdateEmployee(editEmployee)">Save changes</button>
-                </div>
+
+    <Modal @ref="editModal" Title="Modal title">
+        <BodyTemplate>
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" class="form-control" id="firstName" @bind="@editEmployee.FirstName" />
             </div>
-        </div>
-    </div>
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" class="form-control" id="lastName" @bind="@editEmployee.LastName" />
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <input type="text" class="form-control" id="gender" @bind="@editEmployee.Gender" />
+            </div>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+            <Button Color="ButtonColor.Primary" @onclick="() => UpdateEmployee(editEmployee)">Save changes</Button>
+        </FooterTemplate>
+    </Modal>
 }
 
 @code {
+    // Employee object to be edited
+
+    private Modal editModal = default!;
+    private Employee editEmployee = new Employee();
+
+    private async Task OnShowModalClick(Employee emp)
+    {
+        editEmployee = emp;
+        await editModal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await editModal.HideAsync();
+    }
     // ======================================== Get all employees ==================================================
     List<Employee> empList;
 
@@ -105,6 +111,7 @@ else
 
 
     // ========================================= Delete employee ====================================================
+   
     private int employeeIdToBeDeleted; // This will hold the id to be deleted
     private bool deletedState = false;
     private bool updatedState = false;
@@ -140,17 +147,5 @@ else
         {
             updatedState = true;
         }
-    }
-
-    // Methods
-
-    private Employee editEmployee; // Employee object to be edited
-
-    // Method to open the edit modal and populate it with employee data
-    private void OpenEditModal(Employee employee)
-    {
-        editEmployee = employee; // Set the employee to be edited
-                                
-        JSRuntime.InvokeVoidAsync("$('#editModal').modal", "show"); // Show the modal
     }
 }
