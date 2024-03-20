@@ -11,7 +11,9 @@ namespace EmployeeBlazorCRUD.Data
         public string LastName { get; set; }
         [Required]
         public string Telephone { get; set; }
-
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
         [Required]
         [StringLength(300, MinimumLength = 10)]
         public string Message { get; set; }

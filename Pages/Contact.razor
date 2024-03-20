@@ -10,7 +10,7 @@
 {
     <Alert Color="AlertColor.Success"> <Icon Name="IconName.CheckCircleFill" class="me-2"></Icon>Message sent !!!</Alert>
 }
-<Card Color="CardColor.Light" Class="mb-4" Style="width:100%;">
+<Card Color="CardColor.Light" Class="mb-4" Style="width:100%;"> 
     <CardHeader>CONTACT US</CardHeader>
     <CardBody>
         <EditForm OnValidSubmit="Submit" Model="Model" FormName="Contact" >
@@ -32,6 +32,12 @@
                 <label class="d-flex gap-2 align-items-center">
                     <div Style="width:20%;">Phone:</div>
                     <InputText @bind-Value="Model!.Telephone" class="form-control py-3" />
+                </label>
+            </div>
+            <div class="mb-4">
+                <label class="d-flex gap-2 align-items-center">
+                    <div Style="width:20%;">Email:</div>
+                    <InputText @bind-Value="Model!.Email" class="form-control py-3" />
                 </label>
             </div>
             <div class="mb-4">
@@ -72,5 +78,5 @@
 
     }
 
-}
+}    
 
